@@ -17,7 +17,7 @@ class _Home_ScreenState extends State<Home_Screen> {
         backgroundColor: Colors.black,
         centerTitle: true,
         title: Text(
-          "Acionamento de Cargas"
+            "Acionamento de Cargas"
         ),
       ),
       body: Center(

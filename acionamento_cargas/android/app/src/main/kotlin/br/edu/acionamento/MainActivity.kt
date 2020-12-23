@@ -1,4 +1,4 @@
-package br.edu.ifpb.acionamento_cargas
+package br.edu.acionamento
 
 import io.flutter.embedding.android.FlutterActivity
 
