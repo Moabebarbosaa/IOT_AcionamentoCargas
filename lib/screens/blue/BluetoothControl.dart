@@ -75,6 +75,9 @@ class _BluetoothControlState extends State<BluetoothControl> {
               Text('Desconectado')
           )
       ),
+      body: Container(
+        
+      ),
     );
   }
 }

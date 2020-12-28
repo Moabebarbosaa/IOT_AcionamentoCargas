@@ -1,4 +1,5 @@
-import 'package:acionamento/screens/home_screen.dart';
+import 'package:acionamento/screens/home/home_screen.dart';
+import 'package:acionamento/screens/wifi/wifi_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Home_Screen()
+      home: HomeScreen()
     );
   }
 }
