@@ -1,5 +1,5 @@
+import 'package:acionamento/screens/blue/Bluetooth_Screen.dart';
 import 'package:acionamento/screens/home/home_screen.dart';
-import 'package:acionamento/screens/wifi/wifi_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {

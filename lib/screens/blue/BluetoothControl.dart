@@ -70,9 +70,9 @@ class _BluetoothControlState extends State<BluetoothControl> {
     return Scaffold(
       appBar: AppBar(
           title: (
-              isConnecting ? Text('Conectando ' + widget.server.name + '...') :
-              isConnected ? Text('Conectado à ' + widget.server.name) :
-              Text('Desconectado')
+            isConnecting ? Text('Conectando ' + widget.server.name + '...') :
+            isConnected ? Text('Conectado à ' + widget.server.name) :
+            Text('Desconectado')
           )
       ),
       body: Container(

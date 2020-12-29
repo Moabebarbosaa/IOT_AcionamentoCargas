@@ -1,4 +1,6 @@
 import 'package:acionamento/backend/blue/InitConnectionBlue.dart';
+import 'package:acionamento/screens/blue/BluetoothControl.dart';
+import 'package:acionamento/screens/blue/Bluetooth_Screen.dart';
 import 'package:acionamento/screens/wifi/wifi_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -68,8 +70,9 @@ class HomeScreen extends StatelessWidget {
                   ],
                 ),
                 onPressed: () {
-                  _startConnection.start();
-                },
+                  // _startConnection.start();
+                  Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => BluetoothScreen()));
+                  },
               ),
             ),
           ),

@@ -147,55 +147,75 @@ class _WiFiScreenState extends State<WiFiScreen> {
                     return ListView.builder(
                       itemCount: documents.length,
                       itemBuilder: (context, index) {
-                        return Padding(
-                          padding: EdgeInsets.fromLTRB(30, 15, 30, 15),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        documents[index].data['nome'],
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 25
+                        return Dismissible(
+                          key: Key(DateTime.now().microsecondsSinceEpoch.toString()),
+                          background: Container(
+                            padding: EdgeInsets.only(right: 15),
+                            color: Colors.red,
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Icon(Icons.delete, color: Colors.white),
+                            ),
+                          ),
+                          direction: DismissDirection.endToStart,
+                          onDismissed: (direction) {
+                            _add.removeRele(documents[index].documentID, documents[index]['chave']);
+
+                            final snack = SnackBar(
+                              content: Text("Removido com sucesso!"),
+                              backgroundColor: Colors.green,
+                              duration: Duration(seconds: 2),
+                            );
+
+                            Scaffold.of(context).showSnackBar(snack);
+
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(30, 15, 30, 15),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          documents[index].data['nome'],
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 25
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(height: 10,),
-                                      Text(
-                                        'Chave: '+documents[index].data['chave'],
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 12
+                                        SizedBox(height: 10,),
+                                        Text(
+                                          'Chave: '+documents[index].data['chave'],
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  FlatButton(
-                                    child:  Icon(
-                                      documents[index].data['estado'] == false ? Icons.wb_incandescent_outlined : Icons.wb_incandescent,
+                                      ],
+                                    ),
+                                    FlatButton(
+                                      child:  Icon(
+                                        documents[index].data['estado'] == false ? Icons.wb_incandescent_outlined : Icons.wb_incandescent,
                                         color: documents[index].data['estado'] == false ? Colors.white : Colors.yellow,
                                         size: 100,
                                       ),
-                                    onPressed: (){
-                                      setState(() {
-                                        String id = documents[index].documentID;
-                                        bool estado = documents[index].data['estado'];
-                                        Firestore.instance.collection("remoto").document(id).updateData(({'estado': !estado}));
-                                      });
-                                    },
-                                  )
-                                ],
-                              ),
-                              SizedBox(height: 30,),
-                              Divider(
-                                color: Colors.white,
-                                thickness: 2,
-                              )
-                            ],
+                                      onPressed: (){
+                                        setState(() {
+                                          String id = documents[index].documentID;
+                                          bool estado = documents[index].data['estado'];
+                                          Firestore.instance.collection("remoto").document(id).updateData(({'estado': !estado}));
+                                        });
+                                      },
+                                    )
+                                  ],
+                                ),
+                                SizedBox(height: 30,),
+                              ],
+                            ),
                           ),
                         );
                       }
