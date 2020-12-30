@@ -1,16 +1,35 @@
-import 'package:acionamento/backend/blue/InitConnectionBlue.dart';
-import 'package:acionamento/screens/blue/BluetoothControl.dart';
+import 'dart:convert';
+
+import 'package:acionamento/backend/json/FunctionJson.dart';
 import 'package:acionamento/screens/blue/Bluetooth_Screen.dart';
 import 'package:acionamento/screens/wifi/wifi_screen.dart';
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
+FunctionJason _functionJason = new FunctionJason();
+
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+
+class _HomeScreenState extends State<HomeScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+
+    _functionJason.readData().then((data) {
+      setState(() {
+        _functionJason.setToDoList(json.decode(data));
+      });
+    });
+
+
+  }
 
   @override
   Widget build(BuildContext context) {
-
-    StartConnection _startConnection = new StartConnection(context);
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: Column(
@@ -72,7 +91,7 @@ class HomeScreen extends StatelessWidget {
                 onPressed: () {
                   // _startConnection.start();
                   Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => BluetoothScreen()));
-                  },
+                },
               ),
             ),
           ),
@@ -81,3 +100,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+
+
+

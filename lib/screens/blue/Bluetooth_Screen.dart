@@ -1,9 +1,11 @@
+import 'package:acionamento/backend/blue/FunctionBluetooth.dart';
 import 'package:acionamento/backend/json/FunctionJson.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
 
 FunctionJason _functionJason = new FunctionJason();
+//FunctionBluetooth _functionBluetooth = new FunctionBluetooth(connection);
 
 class BluetoothScreen extends StatefulWidget {
   @override
@@ -11,16 +13,16 @@ class BluetoothScreen extends StatefulWidget {
 }
 
 class _BluetoothScreenState extends State<BluetoothScreen> {
-  @override
-  void initState() {
-    super.initState();
-
-    _functionJason.readData().then((data) {
-      setState(() {
-        _functionJason.setToDoList(json.decode(data));
-      });
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //
+  //   _functionJason.readData().then((data) {
+  //     setState(() {
+  //       _functionJason.setToDoList(json.decode(data));
+  //     });
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +66,7 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
                     ),
                   ),
                   SizedBox(height: 10,),
-                  Text(_functionJason.getToDoList()[index]['chave'],
+                  Text("Chave: " + _functionJason.getToDoList()[index]['chave'],
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 12
@@ -74,13 +76,21 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
               ),
               FlatButton(
                 child:  Icon(
-                  Icons.wb_incandescent_outlined,
-                  color: Colors.white,
+                  _functionJason.getToDoList()[index]['chave'] ==
+                      _functionJason.getToDoList()[index]['chave'].toUpperCase() ?
+                  Icons.wb_incandescent : Icons.wb_incandescent_outlined,
+                  color:_functionJason.getToDoList()[index]['chave'] ==
+                      _functionJason.getToDoList()[index]['chave'].toUpperCase() ?
+                  Colors.amber : Colors.white,
                   size: 100,
                 ),
                 onPressed: (){
                   setState(() {
-
+                    _functionJason.refreshState(_functionJason.getToDoList()[index]['chave']);
+                    //  print(_functionJason.getToDoList());
+                    //  _functionJason.setToDoList([]);
+                    // _functionJason.saveData();
+                    // print(_functionJason.getToDoList());
                   });
                 },
               )

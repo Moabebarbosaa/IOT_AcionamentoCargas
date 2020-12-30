@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 
-class FunctionJason{
+List _toDoList = [];
 
-  List _toDoList = [];
+class FunctionJason{
 
   getToDoList(){
     return _toDoList;
@@ -30,10 +30,20 @@ class FunctionJason{
   Future<String> readData() async {
     try {
       final file = await getFile();
-
+      print(getToDoList());
       return file.readAsString();
     } catch (e) {
       return null;
+    }
+  }
+
+  void refreshState(String chave) {
+    for(int i=0; i<_toDoList.length;i++){
+      if (_toDoList[i]['chave'].toUpperCase() == chave.toUpperCase()) {
+        if (chave != chave.toUpperCase()) _toDoList[i]['chave'] = chave.toUpperCase();
+        else _toDoList[i]['chave'] = chave.toLowerCase();
+        saveData();
+      }
     }
   }
 
@@ -47,15 +57,12 @@ class FunctionJason{
 
   void removeToDo(String chave) {
     for(int i=0; i<_toDoList.length;i++){
-      if (_toDoList[i]['chave'] == chave) {
+      if (_toDoList[i]['chave'].toUpperCase() == chave.toUpperCase()) {
+        print("ENTROIOIYDSOA");
         _toDoList.removeAt(i);
         saveData();
       }
     }
-  }
-
-  void acionamento(String chave) {
-    
   }
 
 }

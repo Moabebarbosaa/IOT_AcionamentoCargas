@@ -8,7 +8,8 @@ class Add{
 
   adicionarRele(String nome, String chave){
     Firestore.instance.collection("remoto").document().setData(({'nome': nome, 'chave': chave.toUpperCase(), 'estado': false}));
-    _functionJason.addToDo(nome, chave);
+    _functionJason.addToDo(nome, chave.toLowerCase());
+    print(_functionJason.getToDoList());
   }
 
   Future<bool> validacao(String chave, VoidCallback existe, VoidCallback Nexiste) async {
@@ -26,6 +27,7 @@ class Add{
   removeRele(String id, String chave)  {
     Firestore.instance.collection("remoto").document(id).delete();
     _functionJason.removeToDo(chave);
+    print(_functionJason.getToDoList());
   }
 
 }
