@@ -1,11 +1,18 @@
+import 'dart:io';
+
 import 'package:acionamento_cargas/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  Socket sock = await Socket.connect('192.168.0.11', 80);
+  runApp(MyApp(sock));
 }
 
 class MyApp extends StatelessWidget {
+  Socket sock;
+
+  MyApp(this.sock);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,7 +21,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomeScreen(),
+      home: HomeScreen(sock),
     );
   }
 }

@@ -1,18 +1,30 @@
+import 'dart:io';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
+  Socket sock;
+
+  HomeScreen(this.sock);
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _HomeScreenState createState() => _HomeScreenState(sock);
 }
 
+
 class _HomeScreenState extends State<HomeScreen> {
+  Socket sock;
+
+
+  _HomeScreenState(this.sock);
+
   bool _quarto = false;
   bool _cozinha = false;
   bool _sala = false;
   bool _banheiro = false;
+  bool _connection = true;
 
   final databaseReference = FirebaseDatabase.instance.reference();
 
@@ -56,20 +68,27 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-
                         children: [
-                          Icon(
-                            Icons.wifi_outlined,
-                            color: Colors.white,
-                            size: 40,
+                          IconButton(
+                            icon: Icon(Icons.wifi_outlined, size: 40,),
+                            color: _connection ? Color(0xffF5DF4D) : Colors.white,
+                            onPressed: (){
+                              setState(() {
+                                _connection =true;
+                              });
+                            },
                           ),
                           SizedBox(
                             width: 30,
                           ),
-                          Icon(
-                            Icons.wifi_off_sharp,
-                            color: Colors.white,
-                            size: 40,
+                          IconButton(
+                            icon: Icon(Icons.wifi_off, size: 40,),
+                            color: _connection ? Colors.white : Color(0xffF5DF4D),
+                            onPressed: (){
+                              setState(() {
+                                _connection = false;
+                              });
+                            },
                           ),
                         ],
                       )
@@ -123,9 +142,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                             onChanged: (bool value) {
                                               setState(() {
                                                 _quarto = value;
-                                                databaseReference.child("Leds").update({
-                                                  'Quarto': _quarto == true ? "Q" : "q"
-                                                });
+                                                if(!_connection){
+                                                  sock.write(_quarto == true ? "Q" : "q");
+                                                }else{
+                                                  databaseReference.child("Leds").update({
+                                                    'Quarto': _quarto == true ? "Q" : "q"
+                                                  });
+                                                }
                                               });
                                             },
                                           ),
@@ -164,9 +187,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                             onChanged: (bool value) {
                                               setState(() {
                                                 _sala = value;
-                                                databaseReference.child("Leds").update({
-                                                  'Sala': _sala == true ? "S" : "s"
-                                                });
+                                                if(!_connection){
+                                                  sock.write(_sala == true ? "S" : "s");
+                                                }else{
+                                                  databaseReference.child("Leds").update({
+                                                    'Sala': _sala == true ? "S" : "s"
+                                                  });
+                                                }
                                               });
                                             },
                                           ),
@@ -211,9 +238,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                             onChanged: (bool value) {
                                               setState(() {
                                                 _cozinha = value;
-                                                databaseReference.child("Leds").update({
-                                                  'Cozinha': _cozinha == true ? "C" : "c"
-                                                });
+                                                if(!_connection){
+                                                  sock.write(_cozinha == true ? "C" : "c");
+                                                }else{
+                                                  databaseReference.child("Leds").update({
+                                                    'Cozinha': _cozinha == true ? "C" : "c"
+                                                  });
+                                                }
                                               });
                                             },
                                           ),
@@ -252,6 +283,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                             onChanged: (bool value) {
                                               setState(() {
                                                 _banheiro = value;
+                                                if(!_connection){
+                                                  sock.write(_banheiro == true ? "B" : "b");
+                                                }else{
+                                                  databaseReference.child("Leds").update({
+                                                    'Banheiro': _banheiro == true ? "B" : "b"
+                                                  });
+                                                }
                                                 databaseReference.child("Leds").update({
                                                   'Banheiro': _banheiro == true ? "B" : "b"
                                                 });
