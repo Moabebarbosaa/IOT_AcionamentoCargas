@@ -1,16 +1,15 @@
 import 'dart:io';
-
 import 'package:acionamento_cargas/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
-void main() async {
+void main() async{
   Socket sock = await Socket.connect('192.168.0.11', 80);
   runApp(MyApp(sock));
 }
 
 class MyApp extends StatelessWidget {
-  Socket sock;
 
+  Socket sock;
   MyApp(this.sock);
 
   @override
