@@ -3,7 +3,7 @@ import 'package:acionamento_cargas/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() async{
-  Socket sock = await Socket.connect('192.168.0.11', 80);
+  Socket sock = await Socket.connect('192.168.1.58', 80);
   runApp(MyApp(sock));
 }
 
