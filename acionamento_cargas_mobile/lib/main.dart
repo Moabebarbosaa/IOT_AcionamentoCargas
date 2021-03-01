@@ -1,16 +1,22 @@
-import 'dart:io';
+import 'package:acionamento_cargas/bd_hive/articles.g.dart';
 import 'package:acionamento_cargas/screens/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async{
-  Socket sock = await Socket.connect('192.168.1.58', 80);
-  runApp(MyApp(sock));
+
+  await Hive.initFlutter();
+  Hive.registerAdapter(ReleModelAdapter());
+  var box = await Hive.openBox('reles');
+
+  runApp(MyApp(box));
 }
 
-class MyApp extends StatelessWidget {
 
-  Socket sock;
-  MyApp(this.sock);
+class MyApp extends StatelessWidget {
+  var box;
+  MyApp(this.box);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +26,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomeScreen(sock),
+      home: HomeScreen(box),
     );
   }
 }

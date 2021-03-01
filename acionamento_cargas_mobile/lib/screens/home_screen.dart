@@ -1,24 +1,32 @@
+import 'dart:async';
 import 'dart:io';
-
+import 'package:acionamento_cargas/screens/local_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 
 class HomeScreen extends StatefulWidget {
-  Socket sock;
-  HomeScreen(this.sock);
+  var box;
+  HomeScreen(this.box);
 
   @override
-  _HomeScreenState createState() => _HomeScreenState(sock);
+  _HomeScreenState createState() => _HomeScreenState(box);
 }
 
+
 class _HomeScreenState extends State<HomeScreen> {
-  Socket sock;
-  _HomeScreenState(this.sock);
+  var box;
+  _HomeScreenState(this.box);
+
+  final _favBox = Hive.box('reles');
 
   DatabaseReference _firebase = FirebaseDatabase.instance.reference().child('Leds');
+  final databaseReference = FirebaseDatabase.instance.reference();
 
+  Socket sock;
+  bool verification =  false;
 
   bool _quarto = false;
   bool _cozinha = false;
@@ -26,7 +34,74 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _banheiro = false;
   bool _connection = true;
 
-  final databaseReference = FirebaseDatabase.instance.reference();
+  Timer timer;
+
+  //List<dynamic> valor;
+
+  @override
+  void initState() {
+    super.initState();
+    _firebase.onValue.listen((event) {
+      event.snapshot.value.forEach((k, v){
+        _favBox.put(k, v);
+      });
+    });
+  }
+    //timer = Timer.periodic(Duration(seconds: 1), (Timer t) => atualizarDados());
+
+
+  // void atualizarDados(){
+  //   if(_connection) {
+  //     valor = [];
+  //
+  //     _firebase.onValue.listen((event) {
+  //       event.snapshot.value.forEach((k, v){
+  //         _favBox.put(k, v);
+  //       });
+  //     });
+  //   }
+  //   setState(() {
+  //     valor = _favBox.values.toList();
+  //   });
+  //   print(valor);
+  // }
+
+
+  showAlertDialog(BuildContext context) {
+    Widget okButton = FlatButton(
+      child: Text("OK", style: TextStyle(color: Colors.amber),),
+      onPressed: () {Navigator.pop(context);},
+    );
+    AlertDialog alerta = AlertDialog(
+      title: Text("Erro Na Conexão Local"),
+      content: Text("Conecte a mesma rede do ESP e reinicie o aplicativo."),
+      actions: [
+        okButton,
+      ],
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alerta;
+      },
+    );
+  }
+
+  Future<bool> connect() async {
+    try {
+      sock = await Socket.connect('192.168.1.58', 80, timeout: Duration(seconds: 1));
+      verification = true;
+      setState(() {
+        _connection = false;
+      });
+      return true;
+    } catch(_) {
+      verification = false;
+      showAlertDialog(context);
+      return false;
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +158,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                 setState(() {
                                   _connection = true;
                                 });
-                              },
+                                if (sock != null) sock.close();
+                                var lista = _favBox.values.toList();
+
+                                databaseReference.child("Leds").update({
+                                  'Banheiro': lista[0]
+                                });
+                                databaseReference.child("Leds").update({
+                                  'Cozinha': lista[1]
+                                });
+                                databaseReference.child("Leds").update({
+                                  'Quarto': lista[2]
+                                });
+                                databaseReference.child("Leds").update({
+                                  'Sala': lista[3]
+                                });
+
+                                },
                             ),
                           ),
                           SizedBox(
@@ -100,9 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               icon: Icon(Icons.wifi_off, size: 40,),
                               color: Colors.white,
                               onPressed: (){
-                                setState(() {
-                                  _connection = false;
-                                });
+                                connect();
                               },
                             ),
                           ),
@@ -115,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 170),
+              padding: const EdgeInsets.only(top: 200),
               child: Container(
                   padding: EdgeInsets.only(top: 20, right: 20, left: 20),
                   decoration: BoxDecoration(
@@ -131,10 +220,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               switch(snapshot.connectionState) {
                                 case ConnectionState.none:
                                 case ConnectionState.waiting:
+                                  if(_connection == false) {
+                                    return LocalScreen(sock, _favBox);
+                                  }
                                   return Center(
-                                    child: CircularProgressIndicator(),
+                                    child: CircularProgressIndicator(backgroundColor: Color(0xffF5DF4D), valueColor: AlwaysStoppedAnimation<Color>(Colors.white),),
                                   );
                                 default:
+                                  if(_connection == false) {
+                                    return LocalScreen(sock, _favBox);
+                                  }
                                   return Column(
                                     children: [
                                       Row(
@@ -169,16 +264,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         onChanged: (bool value) {
                                                           setState(() {
                                                             _quarto = value;
-                                                            if(!_connection){
-                                                              sock.write(_quarto == true ? "Q" : "q");
-                                                            }else{
-                                                              databaseReference.child("Leds").update({
-                                                                'Quarto': _quarto == true ? "Q" : "q"
-                                                              });
-                                                            }
+                                                            print("FIREBASE QUARTO");
                                                             databaseReference.child("Leds").update({
                                                               'Quarto': _quarto == true ? "Q" : "q"
                                                             });
+                                                            _favBox.put("Quarto", _quarto ? "Q" : "q");
                                                           });
                                                         },
                                                       ),
@@ -217,16 +307,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         onChanged: (bool value) {
                                                           setState(() {
                                                             _sala = value;
-                                                            if(!_connection){
-                                                              sock.write(_sala == true ? "S" : "s");
-                                                            }else{
-                                                              databaseReference.child("Leds").update({
-                                                                'Sala': _sala == true ? "S" : "s"
-                                                              });
-                                                            }
                                                             databaseReference.child("Leds").update({
                                                               'Sala': _sala == true ? "S" : "s"
                                                             });
+                                                            _favBox.put("Sala", _sala ? "S" : "s");
+                                                            print("FIREBASE SALA");
                                                           });
                                                         },
                                                       ),
@@ -271,16 +356,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         onChanged: (bool value) {
                                                           setState(() {
                                                             _cozinha = value;
-                                                            if(!_connection){
-                                                              sock.write(_cozinha == true ? "C" : "c");
-                                                            }else{
-                                                              databaseReference.child("Leds").update({
-                                                                'Cozinha': _cozinha == true ? "C" : "c"
-                                                              });
-                                                            }
                                                             databaseReference.child("Leds").update({
                                                               'Cozinha': _cozinha == true ? "C" : "c"
                                                             });
+                                                            _favBox.put("Cozinha", _cozinha ? "C" : "c");
+                                                            print("FIREBASE COZINHA");
                                                           });
                                                         },
                                                       ),
@@ -319,16 +399,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         onChanged: (bool value) {
                                                           setState(() {
                                                             _banheiro = value;
-                                                            if(!_connection){
-                                                              sock.write(_banheiro == true ? "B" : "b");
-                                                            }else{
-                                                              databaseReference.child("Leds").update({
-                                                                'Banheiro': _banheiro == true ? "B" : "b"
-                                                              });
-                                                            }
                                                             databaseReference.child("Leds").update({
                                                               'Banheiro': _banheiro == true ? "B" : "b"
                                                             });
+                                                            _favBox.put("Banheiro", _banheiro ? "B" : "b");
+                                                            print("FIREBASE BANHEIRO");
                                                           });
                                                         },
                                                       ),
