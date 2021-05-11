@@ -1,6 +1,5 @@
-import 'package:acionamento_cargas/bd_hive/articles.dart';
+import 'package:acionamento_cargas_mobile_2/bd_hive/articles.dart';
 import 'package:hive/hive.dart';
-
 
 class ReleModelAdapter extends TypeAdapter<ReleModel> {
   @override
@@ -34,9 +33,9 @@ class ReleModelAdapter extends TypeAdapter<ReleModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is ReleModelAdapter &&
-              runtimeType == other.runtimeType &&
-              typeId == other.typeId;
+      other is ReleModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
 // **************************************************************************
